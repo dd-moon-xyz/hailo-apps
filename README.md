@@ -18,6 +18,40 @@ without using the Raspberry Pi CPU for the inference workload.
 P.O.R. with camera capture, Hailo-powered face detection, face tracking, and
 pan-and-tilt control.
 
+## Setup
+
+Install the Hailo PCIe driver on the Raspberry Pi **host machine** before
+running the devcontainer. Containers share the host kernel, so the driver
+must be installed and loaded on the host rather than during the image build.
+On Raspberry Pi OS with the Raspberry Pi APT repository configured, run:
+
+```sh
+sudo apt update
+sudo apt install hailort-pcie-driver
+sudo reboot
+```
+
+After reboot, verify that the accelerator device is available:
+
+```sh
+ls -l /dev/hailo*
+```
+
+The host driver version must match the HailoRT version installed in the
+container. The image installs `hailort`, `python3-hailort`, and
+`hailo-tappas-core` explicitly; `hailo-all` also pulls in the kernel driver
+and should not be installed in the container.
+
+Build the devcontainer image with Docker Compose available:
+
+```sh
+make devcontainer-build
+```
+
+Then open the project in VS Code and select **Dev Containers: Reopen in
+Container**. The Compose configuration grants the container access to the
+host devices.
+
 ## Components
 
 The application stack builds from Hailo inference to camera capture and

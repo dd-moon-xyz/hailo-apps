@@ -1,28 +1,33 @@
-ARG UV_VERSION=0.12.1
+ARG UV_VERSION=0.13.0
 FROM ghcr.io/astral-sh/uv:${UV_VERSION} AS uv_source
 
-FROM debian:bookworm-slim
+FROM debian:trixie-slim
 
-RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates gpg \
-    && curl -fsSL https://archive.raspberrypi.org/debian/raspberrypi.gpg.key | gpg --dearmor -o /usr/share/keyrings/raspberrypi-archive-keyring.gpg \
-    && echo "deb [signed-by=/usr/share/keyrings/raspberrypi-archive-keyring.gpg] http://archive.raspberrypi.org/debian bookworm main" > /etc/apt/sources.list.d/raspi.list \
-    && apt-get update
+RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates \
+    && curl -fsSL https://raw.githubusercontent.com/raspberrypi/rpi-image-gen/1f5851b24a6ac25b91edfaed5f2b59e770d0ac9e/keydir/raspberrypi-archive-keyring.gpg -o /usr/share/keyrings/raspberrypi-archive-keyring.gpg \
+    && echo "3a29901549ae65a910de13a32551e6eea7f45ba1fd70f0cb67e5c70d98488071  /usr/share/keyrings/raspberrypi-archive-keyring.gpg" | sha256sum -c - \
+    && echo "deb [signed-by=/usr/share/keyrings/raspberrypi-archive-keyring.gpg] https://archive.raspberrypi.org/debian trixie main" > /etc/apt/sources.list.d/raspi.list \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends raspberrypi-archive-keyring
 
-ARG PYTHON_VERSION=3.11
+ARG PYTHON_VERSION=3.13
 RUN --mount=type=cache,target=/var/cache/apt \
-    --mount=target=/var/cache/apt,type=cache,sharing=locked \
     apt-get update && apt-get install -y --no-install-recommends \
     wget \
     unzip \
     git-core \
     openssh-client \
+    build-essential \
+    swig \
+    liblgpio-dev \
     python${PYTHON_VERSION} \
     python${PYTHON_VERSION}-dev \
-    python${PYTHON_VERSION}-distutils \
     python3-setuptools \
     python3-picamera2 \
     python3-rpi.gpio \
-    hailo-all \
+    hailort \
+    python3-hailort \
+    hailo-tappas-core \
     vim \
     htop \
     zsh \

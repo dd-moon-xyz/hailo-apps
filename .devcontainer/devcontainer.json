@@ -28,6 +28,7 @@
                 "ruff.lineLength": 80
             },
             "extensions": [
+                "ms-python.python",
                 "charliermarsh.ruff",
                 "esbenp.prettier-vscode",
                 "eamodio.gitlens",
